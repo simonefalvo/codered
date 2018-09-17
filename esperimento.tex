@@ -29,7 +29,7 @@ Di seguito è riportato il set di equazioni differenziali che descrivono il sist
                 I(0) &=& I_{0} \ll N; S(0) = N -I_{0}; R(0) = Q(0) = 0; 
            \end{array}  \right.
 \end{equation}
-La simulazione è stata eseguita con lo stato iniziale specificato dai seguenti parametri: $N = 1000000$, $I_{0} = 1$, $\eta = 3$, $gamma = 0.05$, $\mu = 0.06/N$ , e $\beta_{0} = 0.8/N$.\\
+La simulazione è stata eseguita con lo stato iniziale specificato dai seguenti parametri: $N = 1000000$, $I_{0} = 1$, $\eta = 3$, $\gamma = 0.05$, $\mu = 0.06/N$ , e $\beta_{0} = 0.8/N$.\\
 $I_{0}$ e $\beta_{0}$ rappresentano rispettivamente numero di host infetti e tasso di infezione iniziali, $\gamma$ e $\mu$ i tassi di rimozione, infine $\eta$ è un parametro di sensibilità che regola $\beta(t)$ in funzione di $I(t)$, sostanzialmente è un fattore che indica quanto il tasso di infezione dipende dal numero di host infetti in un certo istante di tempo, ad esempio $\eta = 0$ implica un tasso di infezione costante.\\
 \begin{figure}[!hbp]
 \centering
@@ -49,7 +49,7 @@ Il nostro studio è consistito nel semplificare il “Two Factor Model” elimin
 La simulazione è stata realizzata tramite Simulink, a partire dalle stesse condizioni iniziali poste da Zou et al. e per un tempo di simulazione equivalente a circa 24h.\\
 I risultati ottenuti (Figura~\ref{simpler}) mostrano che in 12 ore (metà tempo di simulazione) circa il 70\% degli host suscettibili sono stati infettati, approssimativamente la stessa proporzione della simulazione effettuata da Zou et al., quindi in definitiva il fatto che Code Red sia stato scoperto prima della sua violenta diffusione non ha alleviato significativamente le conseguenze in termini di macchine infettate.\\
 Questo risultato mette in evidenza che di fronte ad un worm così aggressivo come Code Red, con un tasso di propagazione che ha raggiunto un picco di 2000 infezioni al minuto, le contromisure che vengono adottate a seguito dell’inizio dell’epidemia non contribuiscono a porre rimedio in maniera efficace da un punto di vista globale, ma ciò che può fare la differenza sono le contromisure preventive che vengono attuate prima degli attacchi, ovvero quelle che tendono a ridurre il numero di host potenzialmente a rischio. Quindi il vero fattore che ha favorito gli effetti devastanti del worm è stata la mancata applicazione della patch che andava ad eliminare la vulnerabilità sfruttata, nonostante fosse stata resa disponibile non poche settimane prima della comparsa della minaccia.\\
-\begin{figure}[!hbp]
+\begin{figure}[!h]
 \centering
 \includegraphics[width=0.95\textwidth]{images/simpler.eps}
 \caption{modello semplificato vs. two-factor}
