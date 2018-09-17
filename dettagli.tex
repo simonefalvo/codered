@@ -1,0 +1,42 @@
+Descrizione\\
+La vulnerabilità è rappresentata da un buffer senza controllo della dimensione relativa alle richieste in arrivo, ed è presente in alcune estensioni ISAPI (Nota ) associate a “Microsoft Index Server” e “Indexing Service” (Nota ). Il primo appartiene a “Windows NT 4.0 Option Pack” mentre il secondo è un servizio nativo di “Windows 2000”.\\
+Un host che esegue una delle due può subire l’esecuzione di codice arbitrario a causa di tale vulnerabilità nell’estensione ISAPI idq.dll (Nota ). Questi processi sono eseguiti nel Local System context, permettendo all’attaccante di eseguire codice con privilegi Local System. Lo sfruttamento di questa vulnerabilità porta l’host target ad essere completamente compromesso in quanto l’attaccante potenzialmente può: eseguire codice arbitrario nel server, cambiare i contenuti contenuti in esso e riconfigurarlo.\\
+Non serve che Index Server e Indexing Service siano in esecuzione per sfruttare la vulnerabilità, perché idq.dll è installato di default quando viene installato Microsoft IIS-Internet Information Server, quindi basta l’esecuzione di quest’ultimo.\\
+
+Nota : L’ISAPI (Internet Services Application Programming Interface) è una tecnologia che permette agli sviluppatori di estendere le funzionalità fornite dal server IIS.\\
+Nota : Microsoft Index Server e Indexing Service sono motori di ricerca e di indicizzazione. Permettono agli utenti di ricercare dati nei siti web o nei server web inserendo parole chiave, frasi o proprietà nei web browser.\\
+Nota : Un estensione ISAPI è una dynamic link library (.dll) che usa ISAPI per fornire un set di funzioni web al di sopra di quelle fornite nativamente da IIS.\\
+Idq.dll fornisce supporto per i file .ida-Internet Data Administration and .idq Internet Data Query.\\
+
+Dettagli tecnici\\
+Nel suo processo di installazione, l’IIS installa diverse estensioni ISAPI, tra cui le “.dll” che forniscono funzionalità aggiuntive.
+Quando un utente deve usare una funzione dell’estensione ISAPI manda una richiesta al server, anche se a volte è possibile chiamare l’estensione ISAPI direttamente. La richiesta dell’utente viene analizzata e IIS determina l’estensione ISAPI da usare, consultando una tabella con i mapping tra le estensioni dei file e ogni estensione ISAPI sul server.\\
+L’estensione ISAPI che contiene la vulnerabilità è idq.dll, la quale fornisce due funzioni:\\
+- fornisce supporto per i file .ida (Internet Data Administration), che sono script che possono essere usati per gestire l’Indexing Service;\\
+- processa i file .idq (Internet Data Query), usata per implementare ricerche custom.\\
+
+Per sfruttare la vulnerabilità deve esistere un mapping tra i file .idq e .ida con l’ idq.dll.\\
+Un attaccante che può stabilire una connessione con un server su cui è installato l’idq.dll, può condurre un attacco sfruttando tale vulnerabilità, riuscendo ad eseguire codice arbitrario sul server.\\
+C’è un buffer non controllato nella parte di codice che gestisce le richieste in arrivo. L’arrivo di una richiesta “malformata” causerà un risultato diverso in base al tipo di contenuto della richiesta stessa:\\
+- dati randomici causeranno il fallimento del server. Nel caso di IIS 4.0 servirà l’intervento dell’amministratore, altrimenti nel caso di IIS 5.0 il server web sarà in grado di ripristinarsi in modo autonomo;\\
+- codice eseguibile arbitrario causerà la sua esecuzione nel server web.\\
+
+L’attaccante ottiene pieno controllo del server web, può eseguire ogni azione che desidera perché l’idq.dll è eseguito nel System Context.\\
+
+A causa dei seri rischi legati a tale vulnerabilità, Microsoft ha consigliato agli utenti potenzialmente interessati da essa di prendere tempestive azioni di protezione. E’ stata rilasciata una patch per eliminare la vulnerabilità, mentre per i clienti impossibilitati ad installarla si poteva ricorrere alla rimozione dei mapping con i file .idq e .ida attraverso l’Internet Services Manager in IIS. Quest’ultima soluzione tuttavia non è da considerarsi come definitiva, in quanto a seguito di aggiunta/rimozioni di componenti addizionali di sistema poteva avvenire il reinserimento automatico dei mapping dannosi.\\
+
+Chi può sfruttare la vulnerabilità? Attraverso essa può avere controllo sulla rete intera?\\
+L’attaccante deve essere solo in grado di imporre una richiesta all’idq.dll . La presenza del mapping che associa i file .idq e .ida ad idq.dll, permette all’attaccante di stabilire una sessione web con il server, attraverso cui sfruttare la vulnerabilità.
+Ci sono delle “best-practice” che aiutano a limitare la portata dell’intromissione di un attaccante. I Web server, soprattutto quelli pubblici, sono sempre stati tra i target preferiti degli attacchi a causa della loro esposizione nella rete. Bisogna tenerne conto nel design della rete, e il primo obiettivo dev'essere quello di limitare le possibili conseguenze della compromissione di un server web.\\
+In particolare si seguono due pratiche:\\
+- isolare i web server nelle DMZ (Nota), separandoli quindi dal resto della rete;\\
+- configurarli come macchine “stand-alone”. Se necessariamente devono far parte di un dominio, questo deve contenere solo macchine della DMZ. I web server non dovrebbero mai far parte dei più grandi domini nella rete.\\
+Queste pratiche negano all’attaccante di arrivare facilmente al server, ma in caso di attacco riuscito questo potrebbe usare il server “conquistato” per attaccare altre macchine.\\
+
+Nota : demilitarized zone\\
+
+Fattori mitiganti:\\
+- la vulnerabilità può essere sfruttata solo se viene stabilita una sessione web con un server infetto. Per essere a rischio bisogna avere IIS, e questo è il caso di Windows 2000 Professional;\\
+- la vulnerabilità non può essere sfruttata se non sono presenti i mapping con i .ida e .idq . Tali mapping possono essere rimossi come detto in precedenza.\\
+- l’abilità di un attaccante che ha compromesso un web server è legata fortemente dall’architettura di rete. La “best practice” per l’architettura di rete riguardo le macchine da proteggere come i web server, prevede di minimizzarne l’esposizione verso un ambiente non controllato come Internet, posizionandole in DMZ, isolandole il più possibile dal resto della rete. Questa pratica può limitare pesantemente il raggio di azione di un attaccante.\\
+
